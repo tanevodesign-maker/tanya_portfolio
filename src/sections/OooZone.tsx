@@ -35,10 +35,10 @@ type ZoneCard = {
 
 // Scattered around the centre heading; each flies in from a different edge.
 const cards: ZoneCard[] = [
-  { id: 'top', image: artwork, alt: 'Artwork', href: '#', width: 200, cx: -90, cy: -210, rotate: 6, fromX: -1120, fromY: -720, exitX: -1120, exitY: -820 },
-  { id: 'right', image: claude, alt: 'Claude', href: '#', width: 260, cx: 320, cy: -100, rotate: -14, fromX: 1060, fromY: -120, exitX: 1120, exitY: -120 },
-  { id: 'left', image: crochet, alt: 'Crochet', href: '#', width: 200, cx: -320, cy: 80, rotate: 4, fromX: -1060, fromY: 90, exitX: -1120, exitY: 90 },
-  { id: 'bottom', image: uxProblems, alt: 'UX problems', href: '#', width: 200, cx: 110, cy: 210, rotate: -8, fromX: 120, fromY: 960, exitX: 120, exitY: 1000 },
+  { id: 'top', image: artwork, alt: 'Artwork', href: '#', width: 160, cx: -90, cy: -210, rotate: 6, fromX: -1120, fromY: -720 },
+  { id: 'right', image: claude, alt: 'Claude', href: '#', width: 210, cx: 320, cy: -100, rotate: -14, fromX: 1060, fromY: -120 },
+  { id: 'left', image: crochet, alt: 'Crochet', href: '#', width: 160, cx: -320, cy: 80, rotate: 4, fromX: -1060, fromY: 90 },
+  { id: 'bottom', image: uxProblems, alt: 'UX problems', href: '#', width: 160, cx: 110, cy: 210, rotate: -8, fromX: 120, fromY: 960 },
 ]
 
 function ZoneCard({
@@ -48,18 +48,12 @@ function ZoneCard({
   c: ZoneCard
   progress: MotionValue<number>
 }) {
-  // Scroll-linked, three phases: slide in → hold → slide back out.
-  const x = useTransform(
-    progress,
-    [0, 0.4, 0.6, 1],
-    [c.fromX, c.cx, c.cx, c.exitX],
-  )
-  const y = useTransform(
-    progress,
-    [0, 0.4, 0.6, 1],
-    [c.fromY, c.cy, c.cy, c.exitY],
-  )
-  const opacity = useTransform(progress, [0, 0.25, 0.7, 1], [0, 1, 1, 0])
+  // Scroll-linked intro only: slide in from off-screen to the resting spot,
+  // then hold there (useTransform clamps past the input range, so further
+  // scrolling doesn't move the asset back out).
+  const x = useTransform(progress, [0, 0.4], [c.fromX, c.cx])
+  const y = useTransform(progress, [0, 0.4], [c.fromY, c.cy])
+  const opacity = useTransform(progress, [0, 0.25], [0, 1])
 
   // Mouse-tracked 3D tilt + zoom on hover (matches the testimonial cards).
   const ref = useRef<HTMLDivElement>(null)
