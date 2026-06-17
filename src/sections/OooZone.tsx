@@ -8,6 +8,7 @@ import {
 } from 'framer-motion'
 import type { MotionValue, SpringOptions } from 'framer-motion'
 import { ArrowUpRight } from 'lucide-react'
+import DotGrid from '../components/DotGrid'
 import artwork from '../assets/ooo_zone/artwork.png'
 import claude from '../assets/ooo_zone/claude.png'
 import crochet from '../assets/ooo_zone/crochet.png'
@@ -132,8 +133,9 @@ export default function OooZone() {
   return (
     <section
       ref={ref}
-      className="relative flex min-h-screen w-full items-center justify-center overflow-x-clip px-6"
+      className="relative isolate flex min-h-screen w-full items-center justify-center overflow-x-clip px-6"
     >
+      <DotGrid />
       {cards.map((c) => (
         <ZoneCard key={c.id} c={c} progress={scrollYProgress} />
       ))}

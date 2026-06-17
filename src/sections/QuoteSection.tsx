@@ -12,7 +12,7 @@ export default function QuoteSection() {
   const containerRef = useRef<HTMLDivElement>(null)
 
   return (
-    <section className="flex min-h-[60vh] w-full items-center justify-center bg-[#FBFBFB] px-6 py-24">
+    <section className="flex min-h-[60vh] w-full items-center justify-center bg-[#F0F0F2] px-6 py-24">
       <motion.div
         ref={containerRef}
         initial={{ opacity: 0, y: 24 }}

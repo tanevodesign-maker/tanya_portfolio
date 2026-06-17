@@ -8,6 +8,7 @@ import {
 } from 'framer-motion'
 import type { MotionValue, SpringOptions } from 'framer-motion'
 import { Star } from 'lucide-react'
+import DotGrid from '../components/DotGrid'
 
 // Spring feel for the 3D tilt / zoom-on-hover (from React Bits "TiltedCard").
 const tiltSpring: SpringOptions = { damping: 30, stiffness: 100, mass: 2 }
@@ -256,6 +257,7 @@ export default function Testimonials() {
       // (They've faded to opacity 0 by the time the quote is in view.)
       className="relative z-10 w-full overflow-x-clip bg-[#FBFBFB] px-6 py-20 sm:py-28"
     >
+      <DotGrid />
       <div className="mx-auto flex max-w-[1100px] flex-col items-center">
         <h2 className="text-center font-serif text-[40px] font-medium leading-[1.05] tracking-tight text-neutral-900 lg:text-[52px]">
           From People
