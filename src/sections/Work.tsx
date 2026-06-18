@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ArrowUpRight } from 'lucide-react'
 
 const filters = ['Selected', 'Product', 'Visual', 'Front End'] as const
@@ -53,11 +53,30 @@ const projectsByTab: Record<(typeof filters)[number], Project[]> = {
 
 export default function Work() {
   const [active, setActive] = useState<(typeof filters)[number]>('Selected')
+  const sectionRef = useRef<HTMLElement>(null)
 
   const visible = projectsByTab[active]
 
+  // The nav's "Work" dropdown dispatches this with a tab name — open that tab
+  // and scroll the Work section into view.
+  useEffect(() => {
+    const onNavigate = (e: Event) => {
+      const tab = (e as CustomEvent<string>).detail
+      if ((filters as readonly string[]).includes(tab)) {
+        setActive(tab as (typeof filters)[number])
+      }
+      sectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+    window.addEventListener('work:navigate', onNavigate)
+    return () => window.removeEventListener('work:navigate', onNavigate)
+  }, [])
+
   return (
-    <section className="flex min-h-screen w-full items-start bg-[#FBFBFB] px-[72px] py-12 sm:py-16">
+    <section
+      ref={sectionRef}
+      id="work"
+      className="flex min-h-screen w-full scroll-mt-24 items-start bg-[#FBFBFB] px-[72px] py-12 sm:py-16"
+    >
       <div className="mx-auto w-full max-w-[1400px]">
         <motion.div
           initial={{ opacity: 0, y: 14 }}

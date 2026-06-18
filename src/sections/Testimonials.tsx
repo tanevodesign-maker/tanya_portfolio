@@ -48,9 +48,9 @@ const testimonials: Testimonial[] = [
       'I recently used these guys for our company conference. They were friendly and professional throughout.',
     name: 'Daniel K.',
     role: 'Operations · Quanta',
-    className: 'bg-neutral-100 text-neutral-800',
-    starClassName: 'text-indigo-500',
-    dividerClassName: 'border-neutral-300',
+    className: 'bg-[#E6CCB2] border-2 border-white text-neutral-800',
+    starClassName: 'text-[#5D5D5D]',
+    dividerClassName: 'border-black/10',
     roleClassName: 'text-neutral-500',
     cx: 250,
     cy: -30,
@@ -67,10 +67,10 @@ const testimonials: Testimonial[] = [
       'Super professional, organised and great to work with. These guys were invaluable on our last major project. Can’t recommend enough.',
     name: 'Maria L.',
     role: 'Project Lead · Northwind',
-    className: 'bg-[#6C63FF] text-white',
-    starClassName: 'text-white',
-    dividerClassName: 'border-white/40',
-    roleClassName: 'text-white/70',
+    className: 'bg-[#E4E47E] border-2 border-white text-neutral-800',
+    starClassName: 'text-[#5D5D5D]',
+    dividerClassName: 'border-black/10',
+    roleClassName: 'text-neutral-500',
     cx: -30,
     cy: -110,
     rotate: -5,
@@ -86,9 +86,9 @@ const testimonials: Testimonial[] = [
       'Really useful system. We got an amazing service for our company hotel bookings for our up and coming events.',
     name: 'Barry W.',
     role: 'Founder · Drift Co.',
-    className: 'bg-white text-neutral-800 shadow-xl',
-    starClassName: 'text-indigo-500',
-    dividerClassName: 'border-neutral-200',
+    className: 'bg-[#BBECF7] border-2 border-white text-neutral-800 shadow-xl',
+    starClassName: 'text-[#5D5D5D]',
+    dividerClassName: 'border-black/10',
     roleClassName: 'text-neutral-500',
     cx: -110,
     cy: 120,
@@ -105,10 +105,10 @@ const testimonials: Testimonial[] = [
       'Within minutes the friendly sales assistant had secured me a spectacular room at The Pullman Hotel, right by the M&S Bank Arena.',
     name: 'Stephen A.',
     role: 'Events Manager · Pullman',
-    className: 'bg-neutral-900 text-neutral-100',
-    starClassName: 'text-indigo-400',
-    dividerClassName: 'border-white/20',
-    roleClassName: 'text-neutral-400',
+    className: 'bg-[#CEDBA9] border-2 border-white text-neutral-800',
+    starClassName: 'text-[#5D5D5D]',
+    dividerClassName: 'border-black/10',
+    roleClassName: 'text-neutral-500',
     cx: -260,
     cy: 30,
     rotate: -8,
@@ -124,9 +124,9 @@ const testimonials: Testimonial[] = [
       'Sorted accommodation in Scotland for me and were very timely and professional. Excellent rates and more discounted than anywhere else :)',
     name: 'Simon F.',
     role: 'Director · Orbital',
-    className: 'bg-[#C4E538] text-neutral-900',
-    starClassName: 'text-neutral-900',
-    dividerClassName: 'border-neutral-900/20',
+    className: 'bg-[#FAF3B6] border-2 border-white text-neutral-900',
+    starClassName: 'text-[#5D5D5D]',
+    dividerClassName: 'border-black/10',
     roleClassName: 'text-neutral-700',
     cx: 120,
     cy: 80,
@@ -207,7 +207,7 @@ function TestimonialCard({
     // Outer layer: scroll-linked position + fan tilt + perspective for the 3D.
     <motion.div
       ref={ref}
-      className={`absolute top-1/2 left-1/2 -mt-[140px] -ml-[125px] h-[280px] w-[250px] cursor-pointer [perspective:800px] ${t.z} hover:z-[80]`}
+      className={`absolute top-1/2 left-1/2 -mt-[156px] -ml-[125px] w-[250px] cursor-pointer [perspective:800px] ${t.z} hover:z-[80]`}
       style={{ x, y, rotate: t.rotate, opacity }}
       onMouseMove={handleMouseMove}
       onMouseEnter={handleMouseEnter}
@@ -215,11 +215,11 @@ function TestimonialCard({
     >
       {/* Inner surface: tilts toward the cursor and zooms on hover. */}
       <motion.div
-        className={`flex h-full w-full flex-col rounded-2xl p-7 transition-shadow [transform-style:preserve-3d] hover:shadow-2xl ${t.className}`}
+        className={`flex w-full flex-col rounded-2xl px-7 py-8 transition-shadow [transform-style:preserve-3d] hover:shadow-2xl ${t.className}`}
         style={{ rotateX, rotateY, scale }}
       >
         <Stars className={t.starClassName} />
-        <p className="mt-4 flex-1 text-[12.5px] leading-relaxed">{t.quote}</p>
+        <p className="mt-4 text-[16px] leading-relaxed">{t.quote}</p>
         <div className={`mt-3 border-t pt-3 ${t.dividerClassName}`}>
           <p className="text-sm font-semibold">{t.name}</p>
           <p className={`text-[11px] ${t.roleClassName}`}>{t.role}</p>
@@ -249,13 +249,14 @@ export default function Testimonials() {
   return (
     <section
       ref={ref}
+      id="testimonials"
       // overflow-x-clip kills the horizontal scroll from the off-screen card
       // origins while leaving the vertical axis visible — so the cards can peek
       // up over the Work section as they fly in instead of being masked off.
       // z-10 lifts the section above the later QuoteSection so cards exiting
       // downward render on top of it instead of being clipped at its top edge.
       // (They've faded to opacity 0 by the time the quote is in view.)
-      className="relative z-10 w-full overflow-x-clip bg-[#FBFBFB] px-6 py-20 sm:py-28"
+      className="relative z-10 w-full scroll-mt-24 overflow-x-clip bg-[#FBFBFB] px-6 py-20 sm:py-28"
     >
       <DotGrid />
       <div className="mx-auto flex max-w-[1100px] flex-col items-center">

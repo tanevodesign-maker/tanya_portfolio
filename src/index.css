@@ -8,11 +8,18 @@
   --font-serif: "Roboto Serif", ui-serif, Georgia, Cambria, serif;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 html,
 body {
   margin: 0;
   min-height: 100vh;
   background-color: #FBFBFB;
+  /* Stop the elastic overscroll "bounce" so the user can't pull past the
+     bottom image and reveal the page background underneath it. */
+  overscroll-behavior-y: none;
   /* Guarantee all body/subtext renders in Inter regardless of base defaults. */
   font-family: var(--font-sans);
 }

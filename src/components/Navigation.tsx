@@ -9,7 +9,6 @@ import {
   FileText,
   Menu,
   X,
-  MessageCircle,
   ArrowUpRight,
 } from 'lucide-react'
 
@@ -30,56 +29,59 @@ export default function Navigation() {
   )
 
   const menuItems = {
+    // "Work" dropdown — each item opens that tab in the Work section.
     Product: [
       {
-        icon: Calendar,
-        title: 'Plan',
-        description: 'Plan your day your way',
+        icon: Sparkles,
+        title: 'Selected',
+        description: 'A curated pick of recent work',
+        tab: 'Selected',
+      },
+      {
+        icon: Sliders,
+        title: 'Product',
+        description: 'End-to-end product design',
+        tab: 'Product',
+      },
+      {
+        icon: PenTool,
+        title: 'Visual',
+        description: 'Brand & visual explorations',
+        tab: 'Visual',
+      },
+      {
+        icon: FileText,
+        title: 'Front End',
+        description: 'Designed and built in code',
+        tab: 'Front End',
+      },
+    ],
+    // "Others" dropdown.
+    Community: [
+      {
+        icon: Sparkles,
+        title: 'Vibe Coding',
+        description: 'Things I built by vibe coding',
         href: '#',
       },
       {
         icon: PenTool,
-        title: 'Write',
-        description: 'One Writing Experience, Every Device',
-        href: '#',
-      },
-      {
-        icon: Sliders,
-        title: 'Organize',
-        description: 'Structure that adapts to Your thinking',
-        href: '#',
-      },
-      {
-        icon: Sparkles,
-        title: 'Customize',
-        description: 'Make it unmistakably yours',
-        href: '#',
-      },
-    ],
-    Community: [
-      {
-        icon: Sparkles,
-        title: "What's New",
-        description: 'Latest updates and features',
+        title: 'Crocheting',
+        description: 'Handmade crochet pieces',
         href: '#',
       },
       {
         icon: LifeBuoy,
-        title: 'Help and Support',
-        description: 'Get help when you need it',
+        title: 'UX Problems',
+        description: 'Teardowns & UX critiques',
         href: '#',
       },
       {
-        icon: FileText,
-        title: 'Blog',
-        description: 'Stories and insights',
+        icon: Calendar,
+        title: 'UI Components',
+        description: '(coming soon)',
         href: '#',
-      },
-      {
-        icon: MessageCircle,
-        title: 'Discord',
-        description: 'Chat and connect',
-        href: '#',
+        comingSoon: true,
       },
     ],
   }
@@ -164,7 +166,7 @@ export default function Navigation() {
                     Work
                   </button>
                   <a
-                    href="#"
+                    href="#testimonials"
                     className="rounded-full px-4 py-2 text-sm font-light tracking-tight text-neutral-900 no-underline hover:font-bold hover:text-neutral-700"
                     onMouseEnter={() => setActiveMenu(null)}
                   >
@@ -217,10 +219,29 @@ export default function Navigation() {
                         {menuItems[activeMenu as keyof typeof menuItems].map(
                           (item, index) => {
                             const Icon = item.icon
+                            const tab = 'tab' in item ? item.tab : undefined
+                            const href = 'href' in item ? item.href : undefined
+                            const comingSoon =
+                              'comingSoon' in item && item.comingSoon
                             return (
                               <motion.a
                                 key={item.title}
-                                href={item.href}
+                                href={tab ? '#work' : (href ?? '#')}
+                                onClick={(e) => {
+                                  if (comingSoon) {
+                                    e.preventDefault()
+                                    return
+                                  }
+                                  if (tab) {
+                                    e.preventDefault()
+                                    window.dispatchEvent(
+                                      new CustomEvent('work:navigate', {
+                                        detail: tab,
+                                      }),
+                                    )
+                                  }
+                                  setActiveMenu(null)
+                                }}
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{
@@ -228,7 +249,9 @@ export default function Navigation() {
                                   delay: index * 0.05,
                                   ease: 'easeOut',
                                 }}
-                                className="group flex items-start gap-3 rounded-2xl border border-white/40 bg-white/20 p-4 backdrop-blur-2xl transition-[border-color,box-shadow] duration-200 hover:border-white/80 hover:shadow-md"
+                                className={`group flex items-start gap-3 rounded-2xl border border-white/40 bg-white/20 p-4 backdrop-blur-2xl transition-[border-color,box-shadow] duration-200 hover:border-white/80 hover:shadow-md ${
+                                  comingSoon ? 'cursor-default opacity-60' : ''
+                                }`}
                               >
                                 <div className="shrink-0 rounded-lg bg-white/60 p-2">
                                   <Icon className="h-5 w-5 text-neutral-900" />
@@ -340,7 +363,16 @@ export default function Navigation() {
                               return (
                                 <a
                                   key={item.title}
-                                  href={item.href}
+                                  href="#work"
+                                  onClick={(e) => {
+                                    e.preventDefault()
+                                    window.dispatchEvent(
+                                      new CustomEvent('work:navigate', {
+                                        detail: item.tab,
+                                      }),
+                                    )
+                                    setMobileMenuOpen(false)
+                                  }}
                                   className="flex items-start gap-3 rounded-xl border border-white/40 bg-white/20 p-3 no-underline backdrop-blur-2xl"
                                 >
                                   <div className="shrink-0 rounded-lg bg-white/60 p-2">
@@ -363,7 +395,7 @@ export default function Navigation() {
                         {/* Community Section */}
                         <div>
                           <h3 className="mb-2 px-2 text-sm font-bold text-neutral-900">
-                            About
+                            Others
                           </h3>
                           <div className="space-y-2">
                             {menuItems.Community.map((item) => {

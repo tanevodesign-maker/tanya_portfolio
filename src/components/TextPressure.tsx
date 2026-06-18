@@ -32,9 +32,9 @@ const getAttr = (distance: number, maxDist: number, minVal: number, maxVal: numb
   return Math.max(minVal, val + minVal);
 };
 
-const debounce = (func: (...args: any[]) => void, delay: number) => {
+const debounce = (func: (...args: unknown[]) => void, delay: number) => {
   let timeoutId: ReturnType<typeof setTimeout>;
-  return (...args: any[]) => {
+  return (...args: unknown[]) => {
     clearTimeout(timeoutId);
     timeoutId = setTimeout(() => {
       func.apply(this, args);
@@ -113,9 +113,35 @@ const TextPressure: React.FC<TextPressureProps> = ({
     setLineHeight(1);
 
     requestAnimationFrame(() => {
-      if (!titleRef.current) return;
-      const textRect = titleRef.current.getBoundingClientRect();
+      if (!titleRef.current || !containerRef.current) return;
 
+      // Shrink-to-fit: the per-char width axis expands toward the cursor (up to
+      // wdth 200), so size the font for the WORST case — every char fully
+      // expanded — and scale down if that would overflow the container. This
+      // guarantees the wordmark never spills past the edges, whatever the
+      // cursor is doing.
+      const spans = spansRef.current.filter(Boolean) as HTMLSpanElement[];
+      if (spans.length > 0) {
+        const prev = spans.map((s) => s.style.fontVariationSettings);
+        spans.forEach((s) => {
+          s.style.fontVariationSettings = "'wght' 900, 'wdth' 200, 'ital' 0";
+        });
+        const widest = spans.reduce(
+          (sum, s) => sum + s.getBoundingClientRect().width,
+          0,
+        );
+        spans.forEach((s, i) => {
+          s.style.fontVariationSettings = prev[i];
+        });
+
+        const cW = containerRef.current.getBoundingClientRect().width;
+        if (widest > cW && widest > 0) {
+          newFontSize = Math.max(minFontSize, (newFontSize * cW) / widest);
+          setFontSize(newFontSize);
+        }
+      }
+
+      const textRect = titleRef.current.getBoundingClientRect();
       if (scale && textRect.height > 0) {
         const yRatio = containerH / textRect.height;
         setScaleY(yRatio);
@@ -152,8 +178,10 @@ const TextPressure: React.FC<TextPressureProps> = ({
 
           const d = dist(mouseRef.current, charCenter);
 
-          const wdth = width ? Math.floor(getAttr(d, maxDist, 5, 200)) : 100;
-          const wght = weight ? Math.floor(getAttr(d, maxDist, 100, 900)) : 400;
+          // Resting floors (75 / 400) keep the wordmark legible when the cursor
+          // is nowhere near it; chars still expand up to 200 / 900 toward the cursor.
+          const wdth = width ? Math.floor(getAttr(d, maxDist, 75, 200)) : 100;
+          const wght = weight ? Math.floor(getAttr(d, maxDist, 400, 900)) : 400;
           const italVal = italic ? getAttr(d, maxDist, 0, 1).toFixed(2) : '0';
           const alphaVal = alpha ? getAttr(d, maxDist, 0, 1).toFixed(2) : '1';
 
@@ -176,13 +204,21 @@ const TextPressure: React.FC<TextPressureProps> = ({
   }, [width, weight, italic, alpha]);
 
   const styleElement = useMemo(() => {
-    return (
-      <style>{`
-        @font-face {
+    // Only inject a remote @font-face when a fontUrl is given. When it's empty,
+    // the fontFamily is expected to be loaded elsewhere (e.g. a Google Fonts
+    // <link>), which avoids depending on a remote woff2 that can fail to load
+    // and leave the text invisible.
+    const fontFace = fontUrl
+      ? `@font-face {
           font-family: '${fontFamily}';
           src: url('${fontUrl}');
           font-style: normal;
-        }
+          font-display: swap;
+        }`
+      : ''
+    return (
+      <style>{`
+        ${fontFace}
         .stroke span {
           position: relative;
           color: ${textColor};
@@ -199,7 +235,7 @@ const TextPressure: React.FC<TextPressureProps> = ({
         }
       `}</style>
     );
-  }, [fontFamily, fontUrl, stroke, textColor, strokeColor, strokeWidth]);
+  }, [fontFamily, fontUrl, textColor, strokeColor, strokeWidth]);
 
   return (
     <div ref={containerRef} className="relative w-full h-full overflow-hidden bg-transparent">
@@ -210,7 +246,9 @@ const TextPressure: React.FC<TextPressureProps> = ({
           flex ? 'flex justify-between' : ''
         } ${stroke ? 'stroke' : ''} uppercase text-center`}
         style={{
-          fontFamily,
+          // Fallback stack so the text is always visible even if the remote
+          // Compressa font is unavailable.
+          fontFamily: `'${fontFamily}', 'Roboto Serif', serif`,
           fontSize: fontSize,
           lineHeight,
           transform: `scale(1, ${scaleY})`,

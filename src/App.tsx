@@ -35,11 +35,12 @@ function App() {
       {/* Section 6 — footer */}
       <Footer />
 
-      {/* Bottom image — the final element; the page ends here (no scroll beyond) */}
+      {/* Bottom image — the final element in normal flow; sits below the footer
+          and the page ends here (no scroll beyond). */}
       <img
         src={bottomImg}
         alt=""
-        className="relative z-10 block w-full bg-[#D5EFF3]"
+        className="block w-full bg-[#D7F3F6]"
       />
     </main>
   )
